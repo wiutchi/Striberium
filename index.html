@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stribe | The Surreal Motley</title>
+    <title>Striberium | The Surreal Motley</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;800;900&family=Raleway:ital,wght@0,300;0,400;0,600;1,400&display=swap" rel="stylesheet">
@@ -83,6 +83,30 @@
                             '25%': { filter: 'drop-shadow(0 0 15px rgba(220,213,201,0.1))' },
                             '80%': { filter: 'drop-shadow(3px 0 rgba(138,15,15,0.8)) drop-shadow(-3px 0 rgba(58,79,50,0.8))' },
                             '85%': { filter: 'drop-shadow(0 0 15px rgba(220,213,201,0.1))' }
+                        },
+                        'swing': {
+                            '0%, 100%': { transform: 'rotate(-5deg)' },
+                            '50%': { transform: 'rotate(5deg)' }
+                        },
+                        'spin-slow': {
+                            '0%': { transform: 'rotate(0deg)' },
+                            '100%': { transform: 'rotate(360deg)' }
+                        },
+                        'splatter': {
+                            '0%': { transform: 'translate(-50%, -50%) scale(0)', opacity: '0.8' },
+                            '100%': { transform: 'translate(-50%, -50%) scale(3)', opacity: '0' }
+                        },
+                        'power-fail': {
+                            '0%, 95%, 98%, 100%': { filter: 'none', opacity: '1' },
+                            '96%': { filter: 'invert(1) hue-rotate(90deg) contrast(200%)', opacity: '0.8' },
+                            '97%': { filter: 'contrast(150%)', opacity: '0.2' },
+                            '99%': { filter: 'invert(0.5)', opacity: '0' }
+                        },
+                        'float-up-fade': {
+                            '0%': { transform: 'translateY(0) scale(1)', opacity: '0' },
+                            '20%': { opacity: '0.8' },
+                            '80%': { opacity: '0.6' },
+                            '100%': { transform: 'translateY(-30px) scale(1.2)', opacity: '0' }
                         }
                     }
                 }
@@ -166,15 +190,32 @@
         ::-webkit-scrollbar-thumb:hover { background: #8a0f0f; }
 
         .art-tile {
-            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            transition: filter 0.4s ease, box-shadow 0.4s ease, transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             filter: grayscale(40%) contrast(120%);
+            transform-style: preserve-3d;
         }
         .art-tile:hover {
-            transform: scale(1.05);
             filter: grayscale(0%) contrast(110%);
-            box-shadow: 0 0 40px rgba(138, 15, 15, 0.4);
+            box-shadow: 0 20px 50px rgba(138, 15, 15, 0.4);
             z-index: 20;
             animation: glitch-subtle 0.2s 2;
+        }
+        
+        /* 3D Pop-out elements inside tiles */
+        .art-tile > i {
+            transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            transform: translateZ(20px);
+        }
+        .art-tile:hover > i {
+            transform: translateZ(60px) scale(1.1);
+        }
+        .art-tile .backdrop-blur-sm {
+            transform: translateZ(30px);
+            transform-style: preserve-3d;
+        }
+        .art-tile .backdrop-blur-sm span {
+            transform: translateZ(20px);
+            display: inline-block;
         }
 
         /* Custom Cursor */
@@ -217,7 +258,33 @@
             animation: spin 3s linear infinite;
         }
 
+        /* Cursor Click Ripple */
+        .cursor-ripple {
+            position: fixed;
+            width: 30px; height: 30px;
+            border: 2px solid #8a0f0f;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 999997;
+            animation: splatter 0.6s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
+            mix-blend-mode: screen;
+        }
+
         @keyframes spin { 100% { transform: translate(-50%, -50%) rotate(360deg); } }
+
+        /* Cursor Haunting Words */
+        .haunt-word {
+            position: fixed;
+            font-family: 'Cinzel', serif;
+            color: rgba(138, 15, 15, 0.6);
+            font-size: 10px;
+            letter-spacing: 2px;
+            pointer-events: none;
+            z-index: 999995;
+            animation: float-up-fade 3s ease-out forwards;
+            mix-blend-mode: screen;
+            text-transform: uppercase;
+        }
 
         /* Gallery Textures */
         .flesh-texture {
@@ -246,6 +313,20 @@
             pointer-events: none;
             z-index: 0;
             animation: dust 15s linear infinite;
+        }
+
+        /* Floating Harlequin Shards */
+        .harlequin-shard {
+            position: fixed;
+            width: 8px;
+            height: 14px;
+            background: #8a0f0f;
+            clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+            box-shadow: 0 0 15px rgba(138, 15, 15, 0.6);
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0;
+            animation: dust 20s linear infinite, spin-slow 10s linear infinite;
         }
 
         /* The Jester's Smile */
@@ -285,13 +366,125 @@
             opacity: 1;
             transform: translateY(0);
         }
+
+        /* Hover Bleed Effect for Main Title (Fixed Rendering) */
+        .bleed-hover {
+            color: #dcd5c9;
+            text-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            transition: color 0.5s ease, text-shadow 0.5s ease, transform 0.5s ease;
+        }
+        .bleed-hover:hover {
+            color: #8a0f0f;
+            text-shadow: 0 10px 40px rgba(138, 15, 15, 1), 0 -5px 20px rgba(74, 28, 64, 0.8);
+            transform: scale(1.02);
+        }
+
+        /* Parallax Transitions */
+        .parallax {
+            transition: transform 0.1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        /* The Idle Curse Vignette */
+        #idle-vignette {
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(circle at center, transparent 30%, rgba(30, 0, 0, 0.8) 90%, #000 100%);
+            opacity: 0;
+            pointer-events: none;
+            z-index: 99990;
+            transition: opacity 5s ease-in-out;
+            mix-blend-mode: multiply;
+        }
+        body.is-idle #idle-vignette {
+            opacity: 1;
+        }
+        
+        /* Ritual Flash Overlay */
+        #ritual-flash {
+            position: fixed;
+            inset: 0;
+            background-color: #8a0f0f;
+            z-index: 9999999;
+            opacity: 0;
+            pointer-events: none;
+            mix-blend-mode: overlay;
+            transition: opacity 0.1s ease-in;
+        }
+
+        /* The Vertigo Scroll Effect */
+        body.vertigo {
+            filter: contrast(130%) saturate(150%) drop-shadow(4px 0px 0px rgba(138, 15, 15, 0.6)) drop-shadow(-4px 0px 0px rgba(74, 28, 64, 0.6));
+            transform: skewY(0.5deg) scale(1.01);
+            transition: transform 0.1s ease-out, filter 0.1s ease-out;
+        }
+
+        /* Void Realm Inversion (Secret) */
+        body.void-mode {
+            filter: invert(1) hue-rotate(180deg) contrast(120%);
+            background-color: #fafcfaf;
+        }
+        body.void-mode .texture-overlay {
+            opacity: 0.15;
+        }
+
+        /* CRT Scanlines */
+        .scanlines {
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.15) 50%, rgba(0,0,0,0.15));
+            background-size: 100% 4px;
+            z-index: 99990;
+            pointer-events: none;
+            opacity: 0.3;
+        }
+
+        /* Void Modal Overlay */
+        #void-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(5, 3, 5, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 999999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.5s ease;
+        }
+        #void-modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        /* System Instability */
+        .power-flicker {
+            animation: power-fail 25s infinite;
+        }
     </style>
 </head>
-<body class="font-body antialiased min-h-screen flex flex-col selection:bg-jester-red selection:text-white relative locked">
+<body class="font-body antialiased min-h-screen flex flex-col selection:bg-jester-red selection:text-white relative locked power-flicker">
 
     <!-- Custom Cursors -->
     <div id="custom-cursor"></div>
     <div id="custom-cursor-trail"></div>
+
+    <!-- CRT Overlay -->
+    <div class="scanlines"></div>
+
+    <!-- The Idle Curse Overlay -->
+    <div id="idle-vignette"></div>
+    <div id="ritual-flash"></div>
+
+    <!-- Hanging Pendulum Bells -->
+    <div class="fixed top-0 left-[5%] md:left-[10%] origin-top animate-[swing_6s_ease-in-out_infinite] z-50 pointer-events-none opacity-40 mix-blend-screen">
+        <div class="w-[2px] h-24 md:h-32 bg-gradient-to-b from-jester-gold/50 to-jester-gold/10 mx-auto"></div>
+        <i class="fa-solid fa-bell text-jester-gold text-2xl md:text-3xl -ml-2.5 md:-ml-3 filter drop-shadow-[0_0_10px_rgba(176,141,72,0.8)]"></i>
+    </div>
+    <div class="fixed top-0 right-[5%] md:right-[10%] origin-top animate-[swing_8s_ease-in-out_infinite_reverse] z-50 pointer-events-none opacity-40 mix-blend-screen">
+        <div class="w-[2px] h-16 md:h-24 bg-gradient-to-b from-jester-gold/50 to-jester-gold/10 mx-auto"></div>
+        <i class="fa-solid fa-bell text-jester-gold text-xl md:text-2xl -ml-2 filter drop-shadow-[0_0_10px_rgba(176,141,72,0.8)]"></i>
+    </div>
 
     <!-- ENTRY OVERLAY -->
     <div id="entry-overlay">
@@ -310,29 +503,37 @@
         <div class="texture-overlay"></div>
         <div class="bg-motley"></div>
 
-        <!-- Abyssal Dust Particles -->
+        <!-- Abyssal Dust Particles & Harlequin Shards -->
         <div class="dust-particle w-2 h-2 left-[10%]" style="animation-duration: 25s; animation-delay: 0s;"></div>
+        <div class="harlequin-shard left-[20%]" style="animation-duration: 22s; animation-delay: -7s;"></div>
         <div class="dust-particle w-1 h-1 left-[30%]" style="animation-duration: 18s; animation-delay: -5s;"></div>
+        <div class="harlequin-shard left-[45%] !bg-jester-purple" style="animation-duration: 26s; animation-delay: -2s;"></div>
         <div class="dust-particle w-3 h-3 left-[50%] bg-jester-red/30" style="animation-duration: 30s; animation-delay: -12s;"></div>
         <div class="dust-particle w-1 h-1 left-[70%]" style="animation-duration: 22s; animation-delay: -8s;"></div>
+        <div class="harlequin-shard left-[80%] !bg-jester-gold" style="animation-duration: 35s; animation-delay: -15s;"></div>
         <div class="dust-particle w-2 h-2 left-[85%] bg-jester-purple/30" style="animation-duration: 28s; animation-delay: -3s;"></div>
 
         <!-- Cosmic/Surreal Ambient Gradients -->
         <div class="fixed top-0 left-0 w-full h-full overflow-hidden pointer-events-none -z-10">
-            <div class="absolute top-[-10%] left-[-10%] w-[60vw] h-[60vw] bg-jester-purple opacity-[0.15] rounded-full blur-[150px]"></div>
-            <div class="absolute bottom-[-10%] right-[-10%] w-[50vw] h-[50vw] bg-jester-green opacity-10 rounded-full blur-[120px]"></div>
+            <div class="parallax absolute top-[-10%] left-[-10%] w-[60vw] h-[60vw] bg-jester-purple opacity-[0.15] rounded-full blur-[150px]" data-speed="1.5"></div>
+            <div class="parallax absolute bottom-[-10%] right-[-10%] w-[50vw] h-[50vw] bg-jester-green opacity-10 rounded-full blur-[120px]" data-speed="-1.5"></div>
+            
+            <!-- Drifting Phantoms -->
+            <i class="fa-solid fa-masks-theater text-[40rem] text-jester-red/5 absolute top-1/4 left-1/4 animate-[float-slow_20s_ease-in-out_infinite] pointer-events-none -rotate-12 mix-blend-screen"></i>
+            <i class="fa-solid fa-masks-theater text-[30rem] text-jester-purple/5 absolute bottom-1/4 right-1/4 animate-[float-slow_25s_ease-in-out_infinite_reverse] pointer-events-none rotate-12 mix-blend-screen"></i>
         </div>
 
         <!-- Navigation -->
         <nav class="fixed w-full z-40 bg-jester-bg/90 backdrop-blur-md border-b border-jester-gold/10 shadow-[0_4px_30px_rgba(0,0,0,0.5)]">
             <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
                 <div class="font-heading text-xl tracking-widest text-jester-canvas flex items-center gap-3">
-                    <i class="fa-solid fa-chess-knight text-jester-red text-sm"></i> STRIBE
+                    <i class="fa-solid fa-chess-knight text-jester-red text-sm"></i> STRIBERIUM
                 </div>
                 <div class="hidden md:flex gap-8 font-heading text-xs tracking-[0.2em] text-jester-muted">
                     <a href="#about" class="hover:text-jester-gold transition-colors duration-300">THE FOOL</a>
                     <a href="#visions" class="hover:text-jester-gold transition-colors duration-300">VISIONS</a>
                     <a href="#sonics" class="hover:text-jester-gold transition-colors duration-300">SONICS</a>
+                    <a href="#pact" class="hover:text-jester-red transition-colors duration-300">FORM A PACT</a>
                 </div>
                 <button class="md:hidden text-jester-gold">
                     <i class="fa-solid fa-bars"></i>
@@ -352,11 +553,11 @@
                         <i class="fa-solid fa-diamond text-[8px] text-jester-red"></i>
                     </div>
                     
-                    <h1 class="font-heading text-6xl md:text-8xl lg:text-[10rem] font-black text-transparent bg-clip-text bg-gradient-to-b from-jester-canvas via-[#b8b0a1] to-[#5a564e] leading-[0.8] tracking-tighter animate-[text-glitch_3s_infinite]">
-                        Stribe.
+                    <h1 class="font-heading text-5xl md:text-7xl lg:text-[8rem] font-black leading-[0.8] tracking-tighter animate-[text-glitch_3s_infinite] bleed-hover relative z-20">
+                        Striberium.
                     </h1>
                     
-                    <p class="text-xl md:text-2xl text-jester-canvas font-light leading-relaxed max-w-lg mx-auto lg:mx-0 border-l-2 border-jester-red/60 pl-4 bg-gradient-to-r from-jester-red/10 to-transparent py-2">
+                    <p class="text-xl md:text-2xl text-jester-canvas font-light leading-relaxed max-w-lg mx-auto lg:mx-0 border-l-2 border-jester-red/60 pl-4 bg-gradient-to-r from-jester-red/10 to-transparent py-2 mt-4 relative z-10">
                         Architect of the Grotesque.<br>Jester of the Void.
                     </p>
 
@@ -450,100 +651,100 @@
                 <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-1 md:gap-2">
                     
                     <!-- Entity 1 -->
-                    <a href="https://www.artstation.com/striberium" target="_blank" class="art-tile aspect-square relative overflow-hidden bg-[radial-gradient(circle_at_top,_#4a3a1c,_#111827)] group flex items-center justify-center">
+                    <button class="art-tile aspect-square relative overflow-hidden bg-[radial-gradient(circle_at_top,_#4a3a1c,_#111827)] group flex items-center justify-center cursor-none w-full border-none outline-none" data-title="THE ASTRAL FOOL" data-lore="Born from the collision of dying stars, it laughs at the entropy of the universe. Its cosmic bell chimes echo across the vacuum.">
                         <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMSIgY3k9IjEiIHI9IjEiIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSIvPjwvc3ZnPg==')]"></div>
-                        <i class="fa-solid fa-sun text-6xl text-yellow-600/50 absolute top-1/3 group-hover:text-yellow-500/80 transition-colors drop-shadow-[0_0_15px_rgba(202,138,4,0.5)]"></i>
-                        <i class="fa-solid fa-moon text-5xl text-blue-900/70 absolute bottom-1/3 group-hover:text-blue-500/80 transition-colors"></i>
-                        <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 bg-black/80 backdrop-blur-sm transition-all duration-300 z-30">
+                        <i class="fa-solid fa-sun text-6xl text-yellow-600/50 absolute top-1/3 group-hover:text-yellow-500/80 transition-colors drop-shadow-[0_0_15px_rgba(202,138,4,0.5)] pointer-events-none"></i>
+                        <i class="fa-solid fa-moon text-5xl text-blue-900/70 absolute bottom-1/3 group-hover:text-blue-500/80 transition-colors pointer-events-none"></i>
+                        <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 bg-black/80 backdrop-blur-sm transition-all duration-300 z-30 pointer-events-none">
                             <span class="font-heading text-jester-gold text-sm tracking-[0.2em] text-center px-4">THE ASTRAL FOOL</span>
                         </div>
-                    </a>
+                    </button>
 
                     <!-- Entity 2 -->
-                    <a href="https://www.artstation.com/striberium" target="_blank" class="art-tile aspect-square relative overflow-hidden bg-[radial-gradient(ellipse_at_bottom,_#6a2a2a,_#2a0a0a)] group flex items-center justify-center">
+                    <button class="art-tile aspect-square relative overflow-hidden bg-[radial-gradient(ellipse_at_bottom,_#6a2a2a,_#2a0a0a)] group flex items-center justify-center cursor-none w-full border-none outline-none" data-title="FLESH WEAVER" data-lore="It knits sinew and bone into garments of unimaginable agony. It awaits new material in the lightless depths.">
                         <div class="absolute inset-0 flesh-texture mix-blend-overlay"></div>
-                        <i class="fa-solid fa-user-alien text-7xl text-jester-flesh/60 group-hover:text-jester-flesh/90 transition-colors drop-shadow-[0_0_10px_rgba(140,90,79,0.5)]"></i>
-                        <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 bg-black/80 backdrop-blur-sm transition-all duration-300 z-30">
+                        <i class="fa-solid fa-user-alien text-7xl text-jester-flesh/60 group-hover:text-jester-flesh/90 transition-colors drop-shadow-[0_0_10px_rgba(140,90,79,0.5)] pointer-events-none"></i>
+                        <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 bg-black/80 backdrop-blur-sm transition-all duration-300 z-30 pointer-events-none">
                             <span class="font-heading text-jester-flesh text-sm tracking-[0.2em] text-center px-4">FLESH WEAVER</span>
                         </div>
-                    </a>
+                    </button>
 
                     <!-- Entity 3 -->
-                    <a href="https://www.artstation.com/striberium" target="_blank" class="art-tile aspect-square relative overflow-hidden bg-gradient-to-tr from-[#1a2f1a] to-[#0a0a0a] group flex items-center justify-center">
+                    <button class="art-tile aspect-square relative overflow-hidden bg-gradient-to-tr from-[#1a2f1a] to-[#0a0a0a] group flex items-center justify-center cursor-none w-full border-none outline-none" data-title="ROT BORN" data-lore="A manifestation of plague and eternal decay. Where it treads, the earth weeps green bile.">
                         <div class="absolute inset-0 flesh-texture opacity-30 mix-blend-overlay"></div>
-                        <i class="fa-solid fa-disease text-7xl text-jester-green/60 group-hover:text-jester-green/90 transition-colors drop-shadow-[0_0_15px_rgba(58,79,50,0.6)]"></i>
-                        <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 bg-black/80 backdrop-blur-sm transition-all duration-300 z-30">
+                        <i class="fa-solid fa-disease text-7xl text-jester-green/60 group-hover:text-jester-green/90 transition-colors drop-shadow-[0_0_15px_rgba(58,79,50,0.6)] pointer-events-none"></i>
+                        <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 bg-black/80 backdrop-blur-sm transition-all duration-300 z-30 pointer-events-none">
                             <span class="font-heading text-jester-green text-sm tracking-[0.2em] text-center px-4">ROT BORN</span>
                         </div>
-                    </a>
+                    </button>
 
                     <!-- Entity 4 -->
-                    <a href="https://www.artstation.com/striberium" target="_blank" class="art-tile aspect-square relative overflow-hidden bg-[radial-gradient(circle_at_center,_#2a1a3a,_#000)] group flex items-center justify-center">
+                    <button class="art-tile aspect-square relative overflow-hidden bg-[radial-gradient(circle_at_center,_#2a1a3a,_#000)] group flex items-center justify-center cursor-none w-full border-none outline-none" data-title="VOID MONARCH" data-lore="The sovereign of empty spaces. It holds dominion over the things you forget when you wake up.">
                         <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMSIgY3k9IjEiIHI9IjEiIGZpbGw9IiM0YTFjNDAiIGZpbGwtb3BhY2l0eT0iMC4yIi8+PC9zdmc+')]"></div>
-                        <i class="fa-solid fa-chess-king text-7xl text-jester-purple/60 group-hover:text-jester-gold/80 transition-colors drop-shadow-[0_0_20px_rgba(74,28,64,0.8)]"></i>
-                        <i class="fa-solid fa-hands-holding text-3xl text-jester-muted absolute bottom-4"></i>
-                        <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 bg-black/80 backdrop-blur-sm transition-all duration-300 z-30">
+                        <i class="fa-solid fa-chess-king text-7xl text-jester-purple/60 group-hover:text-jester-gold/80 transition-colors drop-shadow-[0_0_20px_rgba(74,28,64,0.8)] pointer-events-none"></i>
+                        <i class="fa-solid fa-hands-holding text-3xl text-jester-muted absolute bottom-4 pointer-events-none"></i>
+                        <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 bg-black/80 backdrop-blur-sm transition-all duration-300 z-30 pointer-events-none">
                             <span class="font-heading text-jester-purple text-sm tracking-[0.2em] text-center px-4">VOID MONARCH</span>
                         </div>
-                    </a>
+                    </button>
 
                     <!-- Entity 5 -->
-                    <a href="https://www.artstation.com/striberium" target="_blank" class="art-tile aspect-square relative overflow-hidden bg-[radial-gradient(circle_at_center,_#3a0a0a,_#000)] group flex items-center justify-center border-r border-b border-jester-red/20">
-                        <i class="fa-solid fa-mask text-6xl text-jester-red/70 absolute top-1/4 drop-shadow-[0_0_15px_rgba(138,15,15,0.8)]"></i>
-                        <i class="fa-solid fa-box-open text-5xl text-jester-purple/60 absolute bottom-1/4"></i>
-                        <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 bg-black/80 backdrop-blur-sm transition-all duration-300 z-30">
+                    <button class="art-tile aspect-square relative overflow-hidden bg-[radial-gradient(circle_at_center,_#3a0a0a,_#000)] group flex items-center justify-center border-r border-b border-jester-red/20 cursor-none w-full border-none outline-none" data-title="THE OFFERING" data-lore="Do not open the box. The mask is merely the lock; the terror lies within.">
+                        <i class="fa-solid fa-mask text-6xl text-jester-red/70 absolute top-1/4 drop-shadow-[0_0_15px_rgba(138,15,15,0.8)] pointer-events-none"></i>
+                        <i class="fa-solid fa-box-open text-5xl text-jester-purple/60 absolute bottom-1/4 pointer-events-none"></i>
+                        <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 bg-black/80 backdrop-blur-sm transition-all duration-300 z-30 pointer-events-none">
                             <span class="font-heading text-jester-red text-sm tracking-[0.2em] text-center px-4">THE OFFERING</span>
                         </div>
-                    </a>
+                    </button>
 
                     <!-- Entity 6 -->
-                    <a href="https://www.artstation.com/striberium" target="_blank" class="art-tile aspect-square relative overflow-hidden bg-gradient-to-b from-[#2a2a2a] to-[#0a0a0a] group flex items-center justify-center">
+                    <button class="art-tile aspect-square relative overflow-hidden bg-gradient-to-b from-[#2a2a2a] to-[#0a0a0a] group flex items-center justify-center cursor-none w-full border-none outline-none" data-title="SILENT HYMN" data-lore="It sings a song that only the dead can hear. To listen is to invite the final sleep.">
                         <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMSIgY3k9IjEiIHI9IjEiIGZpbGw9IiNGRkYiIGZpbGwtb3BhY2l0eT0iMC4wNSIvPjwvc3ZnPg==')] mix-blend-overlay"></div>
-                        <i class="fa-solid fa-skull-crossbones text-7xl text-jester-canvas/50 group-hover:text-jester-canvas/90 transition-colors drop-shadow-[0_0_15px_rgba(220,213,201,0.6)]"></i>
-                        <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 bg-black/80 backdrop-blur-sm transition-all duration-300 z-30">
+                        <i class="fa-solid fa-skull-crossbones text-7xl text-jester-canvas/50 group-hover:text-jester-canvas/90 transition-colors drop-shadow-[0_0_15px_rgba(220,213,201,0.6)] pointer-events-none"></i>
+                        <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 bg-black/80 backdrop-blur-sm transition-all duration-300 z-30 pointer-events-none">
                             <span class="font-heading text-jester-canvas text-sm tracking-[0.2em] text-center px-4">SILENT HYMN</span>
                         </div>
-                    </a>
+                    </button>
 
                     <!-- Entity 7 -->
-                    <a href="https://www.artstation.com/striberium" target="_blank" class="art-tile aspect-square relative overflow-hidden bg-[conic-gradient(at_center,_#2a0a1a,_#0a1a2a,_#2a0a1a)] group flex items-center justify-center">
-                        <div class="grid grid-cols-2 gap-3 transform rotate-45">
+                    <button class="art-tile aspect-square relative overflow-hidden bg-[conic-gradient(at_center,_#2a0a1a,_#0a1a2a,_#2a0a1a)] group flex items-center justify-center cursor-none w-full border-none outline-none" data-title="PANOPTICON" data-lore="Thousands of eyes, forever unblinking. It watches the sins you haven't committed yet.">
+                        <div class="grid grid-cols-2 gap-3 transform rotate-45 pointer-events-none">
                             <i class="fa-solid fa-eye text-4xl text-jester-gold/60 drop-shadow-[0_0_10px_#b08d48]"></i>
                             <i class="fa-solid fa-eye text-4xl text-jester-red/60 drop-shadow-[0_0_10px_#8a0f0f]"></i>
                             <i class="fa-solid fa-eye text-4xl text-jester-purple/60 drop-shadow-[0_0_10px_#4a1c40]"></i>
                             <i class="fa-solid fa-eye text-4xl text-jester-green/60 drop-shadow-[0_0_10px_#3a4f32]"></i>
                         </div>
-                        <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 bg-black/80 backdrop-blur-sm transition-all duration-300 z-30">
+                        <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 bg-black/80 backdrop-blur-sm transition-all duration-300 z-30 pointer-events-none">
                             <span class="font-heading text-jester-gold text-sm tracking-[0.2em] text-center px-4">PANOPTICON</span>
                         </div>
-                    </a>
+                    </button>
 
                     <!-- Entity 8 -->
-                    <a href="https://www.artstation.com/striberium" target="_blank" class="art-tile aspect-square relative overflow-hidden bg-gradient-to-t from-[#3a1a1a] to-[#1a0a0a] group flex items-center justify-center">
+                    <button class="art-tile aspect-square relative overflow-hidden bg-gradient-to-t from-[#3a1a1a] to-[#1a0a0a] group flex items-center justify-center cursor-none w-full border-none outline-none" data-title="BLOOD ROOTS" data-lore="A tree nourished by the crimson sap of forgotten martyrs. Its fruit is madness.">
                         <div class="absolute inset-0 flesh-texture opacity-50 mix-blend-overlay"></div>
-                        <i class="fa-solid fa-tree text-8xl text-jester-flesh/50 group-hover:text-jester-flesh/80 transition-colors"></i>
-                        <i class="fa-solid fa-droplet text-2xl text-jester-red/70 absolute bottom-6 drop-shadow-[0_0_10px_#8a0f0f]"></i>
-                        <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 bg-black/80 backdrop-blur-sm transition-all duration-300 z-30">
+                        <i class="fa-solid fa-tree text-8xl text-jester-flesh/50 group-hover:text-jester-flesh/80 transition-colors pointer-events-none"></i>
+                        <i class="fa-solid fa-droplet text-2xl text-jester-red/70 absolute bottom-6 drop-shadow-[0_0_10px_#8a0f0f] pointer-events-none"></i>
+                        <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 bg-black/80 backdrop-blur-sm transition-all duration-300 z-30 pointer-events-none">
                             <span class="font-heading text-jester-red text-sm tracking-[0.2em] text-center px-4">BLOOD ROOTS</span>
                         </div>
-                    </a>
+                    </button>
 
                     <!-- Entity 9 -->
-                    <a href="https://www.artstation.com/striberium" target="_blank" class="art-tile aspect-square relative overflow-hidden bg-[radial-gradient(circle_at_bottom,_#0a0a2a,_#000)] group flex items-center justify-center">
-                        <i class="fa-solid fa-spider text-7xl text-blue-900/60 group-hover:text-blue-500/80 transition-colors drop-shadow-[0_0_15px_rgba(30,58,138,0.8)]"></i>
-                        <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 bg-black/80 backdrop-blur-sm transition-all duration-300 z-30">
+                    <button class="art-tile aspect-square relative overflow-hidden bg-[radial-gradient(circle_at_bottom,_#0a0a2a,_#000)] group flex items-center justify-center cursor-none w-full border-none outline-none" data-title="ABYSSAL CRAWLER" data-lore="It skitters along the edge of your peripheral vision. By the time you turn, it is already behind you.">
+                        <i class="fa-solid fa-spider text-7xl text-blue-900/60 group-hover:text-blue-500/80 transition-colors drop-shadow-[0_0_15px_rgba(30,58,138,0.8)] pointer-events-none"></i>
+                        <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 bg-black/80 backdrop-blur-sm transition-all duration-300 z-30 pointer-events-none">
                             <span class="font-heading text-blue-400 text-sm tracking-[0.2em] text-center px-4">ABYSSAL CRAWLER</span>
                         </div>
-                    </a>
+                    </button>
 
                     <!-- Entity 10 -->
-                    <a href="https://www.artstation.com/striberium" target="_blank" class="art-tile aspect-square relative overflow-hidden bg-[radial-gradient(circle,_#3a0a0a,_#050505)] group flex items-center justify-center border border-jester-red/30">
-                        <i class="fa-solid fa-masks-theater text-8xl text-jester-red/60 group-hover:text-jester-red transition-colors drop-shadow-[0_0_20px_rgba(138,15,15,0.9)]"></i>
+                    <button class="art-tile aspect-square relative overflow-hidden bg-[radial-gradient(circle,_#3a0a0a,_#050505)] group flex items-center justify-center border border-jester-red/30 cursor-none w-full outline-none" data-title="THE ARCHITECT" data-lore="The face behind the veil. It pulls the strings of this dark menagerie, wearing a smile painted in sorrow.">
+                        <i class="fa-solid fa-masks-theater text-8xl text-jester-red/60 group-hover:text-jester-red transition-colors drop-shadow-[0_0_20px_rgba(138,15,15,0.9)] pointer-events-none"></i>
                         <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMSIgY3k9IjEiIHI9IjEiIGZpbGw9IiM3YTFjMWMiIGZpbGwtb3BhY2l0eT0iMC4yIi8+PC9zdmc+')] mix-blend-overlay"></div>
-                        <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 bg-black/80 backdrop-blur-sm transition-all duration-300 z-30">
+                        <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 bg-black/80 backdrop-blur-sm transition-all duration-300 z-30 pointer-events-none">
                             <span class="font-heading text-jester-red text-sm tracking-[0.2em] text-center px-4">THE ARCHITECT</span>
                         </div>
-                    </a>
+                    </button>
 
                 </div>
 
@@ -559,8 +760,8 @@
         <section id="sonics" class="py-32 px-6 relative z-10 border-t border-jester-red/20 bg-[#0a0508] overflow-hidden reveal">
             <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMSIgY3k9IjEiIHI9IjEiIGZpbGw9IiM0YTFjNDAiIGZpbGwtb3BhY2l0eT0iMC4xNSIvPjwvc3ZnPg==')] opacity-50 z-0"></div>
             
-            <!-- Creepy Jester Background Element - Now animated -->
-            <div class="absolute top-1/4 left-0 w-full overflow-hidden pointer-events-none opacity-[0.03] select-none z-0">
+            <!-- Creepy Jester Background Element - Now animated & parallax -->
+            <div class="parallax absolute top-1/4 left-0 w-full overflow-hidden pointer-events-none opacity-[0.03] select-none z-0" data-speed="2">
                 <div class="animate-marquee whitespace-nowrap font-heading text-[15rem] text-jester-red font-black">
                     HA HA HA HA HA HA HA HA HA HA HA HA
                 </div>
@@ -614,6 +815,59 @@
             </div>
         </section>
 
+        <!-- The Pact (Contact Form) -->
+        <section id="pact" class="py-32 px-6 relative z-10 border-t border-jester-red/30 bg-[#050305] overflow-hidden reveal">
+            <!-- Hidden Whispers Background -->
+            <div class="parallax absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full text-center pointer-events-none opacity-[0.02] select-none z-0 mix-blend-screen" data-speed="-1">
+                <div class="font-heading text-[10rem] md:text-[20rem] text-jester-canvas font-black tracking-tighter leading-none">
+                    DO NOT LIE<br>TO HIM
+                </div>
+            </div>
+
+            <div class="max-w-3xl mx-auto relative z-10">
+                <div class="text-center mb-16">
+                    <i class="fa-solid fa-pen-nib text-jester-red text-3xl mb-6 drop-shadow-[0_0_15px_rgba(138,15,15,0.8)]"></i>
+                    <h2 class="font-heading text-4xl md:text-5xl text-jester-canvas tracking-widest uppercase">
+                        Form a Pact
+                    </h2>
+                    <p class="text-jester-muted font-body mt-4 tracking-widest text-sm">SUMMON THE ARCHITECT. PROPOSE YOUR OFFERING.</p>
+                </div>
+
+                <form id="pact-form" class="theatrical-border p-8 md:p-12 bg-black/60 backdrop-blur-md shadow-[0_20px_50px_rgba(0,0,0,0.8)] relative group/form transition-all duration-1000">
+                    
+                    <!-- Faint glow behind form -->
+                    <div class="absolute inset-0 bg-jester-red/5 opacity-0 group-hover/form:opacity-100 transition-opacity duration-1000 pointer-events-none"></div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8 relative z-10">
+                        <!-- Input 1 -->
+                        <div class="relative group">
+                            <input type="text" id="name" class="w-full bg-transparent border-b border-jester-muted/30 py-3 text-jester-canvas font-body focus:outline-none focus:border-jester-red transition-colors peer cursor-none" placeholder=" ">
+                            <label for="name" class="absolute left-0 top-3 text-jester-muted/50 font-heading text-xs tracking-[0.2em] transition-all peer-focus:-top-4 peer-focus:text-[10px] peer-focus:text-jester-red peer-not-placeholder-shown:-top-4 peer-not-placeholder-shown:text-[10px] peer-not-placeholder-shown:text-jester-red cursor-none">YOUR TRUE NAME</label>
+                        </div>
+                        
+                        <!-- Input 2 -->
+                        <div class="relative group">
+                            <input type="email" id="email" class="w-full bg-transparent border-b border-jester-muted/30 py-3 text-jester-canvas font-body focus:outline-none focus:border-jester-red transition-colors peer cursor-none" placeholder=" ">
+                            <label for="email" class="absolute left-0 top-3 text-jester-muted/50 font-heading text-xs tracking-[0.2em] transition-all peer-focus:-top-4 peer-focus:text-[10px] peer-focus:text-jester-red peer-not-placeholder-shown:-top-4 peer-not-placeholder-shown:text-[10px] peer-not-placeholder-shown:text-jester-red cursor-none">ETHEREAL CONTACT (EMAIL)</label>
+                        </div>
+                    </div>
+
+                    <!-- Input 3 (Textarea) -->
+                    <div class="relative group mb-12 relative z-10">
+                        <textarea id="message" rows="4" class="w-full bg-transparent border-b border-jester-muted/30 py-3 text-jester-canvas font-body focus:outline-none focus:border-jester-red transition-colors peer resize-none cursor-none" placeholder=" "></textarea>
+                        <label for="message" class="absolute left-0 top-3 text-jester-muted/50 font-heading text-xs tracking-[0.2em] transition-all peer-focus:-top-4 peer-focus:text-[10px] peer-focus:text-jester-red peer-not-placeholder-shown:-top-4 peer-not-placeholder-shown:text-[10px] peer-not-placeholder-shown:text-jester-red cursor-none">THE NATURE OF YOUR OFFERING...</label>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="text-center relative z-10">
+                        <button type="button" id="seal-pact-btn" class="px-12 py-4 bg-[#0a0508] border border-jester-red text-jester-red font-heading text-sm tracking-[0.3em] hover:bg-jester-red hover:text-black transition-all duration-500 hover:shadow-[0_0_30px_rgba(138,15,15,0.5)] cursor-none">
+                            SEAL THE PACT
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
         <!-- Footer -->
         <footer class="py-16 border-t border-jester-red/30 relative z-10 bg-[#020102]">
             <div class="max-w-6xl mx-auto px-6 flex flex-col items-center justify-center">
@@ -630,6 +884,29 @@
 
     </div> <!-- End Main Content -->
 
+    <!-- Void Gallery Modal -->
+    <div id="void-modal">
+        <div class="texture-overlay"></div>
+        <button id="close-modal" class="absolute top-8 right-8 text-jester-muted hover:text-jester-red transition-colors text-2xl cursor-none z-50 p-4">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+        <div class="max-w-4xl w-full px-6 flex flex-col md:flex-row gap-12 items-center relative z-10">
+            <div id="modal-art-container" class="w-full md:w-1/2 aspect-square theatrical-border relative flex items-center justify-center overflow-hidden shadow-[0_0_50px_rgba(138,15,15,0.2)]">
+                <!-- Art injected via JS -->
+            </div>
+            <div class="w-full md:w-1/2 space-y-6 text-center md:text-left">
+                <h3 id="modal-title" class="font-heading text-3xl md:text-5xl text-jester-canvas tracking-widest uppercase drop-shadow-[0_0_10px_rgba(220,213,201,0.5)]"></h3>
+                <div class="w-16 h-1 bg-jester-red/50 mx-auto md:mx-0"></div>
+                <p id="modal-lore" class="text-jester-muted font-light leading-relaxed text-lg italic border-l-2 border-jester-purple/50 pl-4"></p>
+                <div class="pt-8">
+                    <a href="https://www.artstation.com/striberium" target="_blank" class="inline-block px-8 py-3 bg-jester-red/10 border border-jester-red text-jester-canvas font-heading text-xs tracking-[0.2em] hover:bg-jester-red hover:text-black transition-all duration-500 cursor-none shadow-[0_0_15px_rgba(138,15,15,0.3)]">
+                        WITNESS TRUE FORM ON ARTSTATION
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Audio Toggle Button -->
     <button id="audio-toggle" class="fixed bottom-6 left-6 z-50 flex items-center gap-3 px-4 py-2 border text-jester-red border-jester-red shadow-[0_0_15px_rgba(138,15,15,0.5)] bg-black/80 backdrop-blur-md rounded-full transition-all duration-300 group cursor-none opacity-0 invisible">
         <i id="audio-icon" class="fa-solid fa-volume-high text-sm"></i>
@@ -642,7 +919,11 @@
         // Custom Cursor Logic
         const cursor = document.getElementById('custom-cursor');
         const cursorTrail = document.getElementById('custom-cursor-trail');
-        const links = document.querySelectorAll('a, button, .art-tile, #enter-btn');
+        const links = document.querySelectorAll('a, button, .art-tile, #enter-btn, input, textarea');
+        const artTiles = document.querySelectorAll('.art-tile');
+
+        const hauntWords = ['listen', 'void', 'flesh', 'rot', 'stribe', 'awake', 'sleep', 'offer'];
+        let lastHauntTime = 0;
 
         document.addEventListener('mousemove', (e) => {
             cursor.style.left = e.clientX + 'px';
@@ -652,11 +933,93 @@
                 cursorTrail.style.left = e.clientX + 'px';
                 cursorTrail.style.top = e.clientY + 'px';
             }, 60);
+
+            // Whispering Cursor Logic
+            const now = Date.now();
+            if (Math.random() > 0.985 && now - lastHauntTime > 1500 && document.body.classList.contains('locked') === false) {
+                lastHauntTime = now;
+                const word = document.createElement('div');
+                word.classList.add('haunt-word');
+                word.innerText = hauntWords[Math.floor(Math.random() * hauntWords.length)];
+                word.style.left = (e.clientX + 15) + 'px';
+                word.style.top = (e.clientY + 15) + 'px';
+                document.body.appendChild(word);
+                setTimeout(() => word.remove(), 3000);
+            }
         });
 
         links.forEach(link => {
             link.addEventListener('mouseenter', () => document.body.classList.add('hovering-link'));
             link.addEventListener('mouseleave', () => document.body.classList.remove('hovering-link'));
+        });
+
+        // Click Ripple Effect
+        document.addEventListener('click', (e) => {
+            const ripple = document.createElement('div');
+            ripple.classList.add('cursor-ripple');
+            ripple.style.left = e.clientX + 'px';
+            ripple.style.top = e.clientY + 'px';
+            
+            // Randomize ripple color slightly between red and purple
+            if (Math.random() > 0.5) {
+                ripple.style.borderColor = '#4a1c40';
+                ripple.style.boxShadow = '0 0 10px #4a1c40';
+            }
+
+            document.body.appendChild(ripple);
+            
+            setTimeout(() => {
+                ripple.remove();
+            }, 600);
+        });
+
+        // Void Gallery Modal Logic
+        const voidModal = document.getElementById('void-modal');
+        const closeModalBtn = document.getElementById('close-modal');
+        const modalArtContainer = document.getElementById('modal-art-container');
+        const modalTitle = document.getElementById('modal-title');
+        const modalLore = document.getElementById('modal-lore');
+
+        const bindModalHoverLinks = () => {
+            const modalLinks = voidModal.querySelectorAll('a, button');
+            modalLinks.forEach(link => {
+                link.addEventListener('mouseenter', () => document.body.classList.add('hovering-link'));
+                link.addEventListener('mouseleave', () => document.body.classList.remove('hovering-link'));
+            });
+        };
+
+        artTiles.forEach(tile => {
+            tile.addEventListener('click', (e) => {
+                // Populate Modal
+                const title = tile.getAttribute('data-title');
+                const lore = tile.getAttribute('data-lore');
+                
+                // Clone the background and icons of the tile
+                modalArtContainer.innerHTML = '';
+                const tileClone = tile.cloneNode(true);
+                Array.from(tileClone.children).forEach(child => {
+                    // Remove the text overlay specifically
+                    if(child.querySelector('span')) return;
+                    modalArtContainer.appendChild(child);
+                });
+                
+                // Set modal styles to match the tile's background classes
+                modalArtContainer.className = tile.className;
+                modalArtContainer.classList.remove('art-tile', 'w-full', 'cursor-none', 'outline-none', 'border-none');
+                modalArtContainer.classList.add('w-full', 'md:w-1/2', 'aspect-square', 'theatrical-border', 'relative', 'flex', 'items-center', 'justify-center', 'overflow-hidden', 'shadow-[0_0_50px_rgba(138,15,15,0.2)]', 'animate-[breathe_6s_infinite]');
+                
+                modalTitle.innerText = title;
+                modalLore.innerText = lore;
+                
+                // Show Modal
+                voidModal.classList.add('active');
+                bindModalHoverLinks();
+            });
+        });
+
+        closeModalBtn.addEventListener('click', () => {
+            voidModal.classList.remove('active');
+            document.body.classList.remove('hovering-link'); // safeguard
         });
 
         // Eye Tracking Logic
@@ -674,6 +1037,68 @@
             const deltaY = Math.max(-maxOffset, Math.min(maxOffset, (e.clientY - y) / window.innerHeight * maxOffset * 4));
             
             eyePupil.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
+
+            // Spatial Audio Panning
+            if (panner && audioCtx) {
+                const panValue = (e.clientX / window.innerWidth) * 2 - 1;
+                panner.pan.setValueAtTime(panValue, audioCtx.currentTime);
+            }
+        });
+
+        // Parallax Effect
+        document.addEventListener('mousemove', (e) => {
+            const parallaxElements = document.querySelectorAll('.parallax');
+            const x = (window.innerWidth / 2 - e.pageX) / 50;
+            const y = (window.innerHeight / 2 - e.pageY) / 50;
+
+            parallaxElements.forEach(el => {
+                const speed = parseFloat(el.getAttribute('data-speed')) || 1;
+                el.style.transform = `translate(${x * speed}px, ${y * speed}px)`;
+            });
+        });
+
+        // The Idle Curse Timer
+        let idleTimer;
+        const resetIdleTimer = () => {
+            clearTimeout(idleTimer);
+            document.body.classList.remove('is-idle');
+            // 15 seconds of inactivity triggers the curse
+            idleTimer = setTimeout(() => {
+                document.body.classList.add('is-idle');
+            }, 15000); 
+        };
+        
+        // Reset idle timer on various interactions
+        window.addEventListener('mousemove', resetIdleTimer);
+        window.addEventListener('scroll', resetIdleTimer);
+        window.addEventListener('click', resetIdleTimer);
+        resetIdleTimer(); // Init
+
+        // 3D Tilt Effect for Gallery Tiles
+        artTiles.forEach(tile => {
+            tile.addEventListener('mousemove', (e) => {
+                const rect = tile.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                
+                // Calculate rotation (max 15 degrees)
+                const rotateX = ((y - centerY) / centerY) * -15; 
+                const rotateY = ((x - centerX) / centerX) * 15;
+
+                tile.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.05, 1.05, 1.05)`;
+            });
+            
+            tile.addEventListener('mouseleave', () => {
+                tile.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)`;
+                tile.style.transition = `transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), filter 0.4s ease, box-shadow 0.4s ease`;
+            });
+            
+            tile.addEventListener('mouseenter', () => {
+                // Remove transition delay for immediate tracking
+                tile.style.transition = `transform 0.1s linear, filter 0.4s ease, box-shadow 0.4s ease`;
+            });
         });
 
         // Scroll Reveal Logic
@@ -699,6 +1124,7 @@
 
         let audioCtx;
         let masterGain;
+        let panner;
         let isPlaying = false;
         let audioInitialized = false;
 
@@ -724,18 +1150,22 @@
             }
             convolver.buffer = impulse;
             
+            // Spatial Audio Panner Node
+            panner = audioCtx.createStereoPanner();
+            
             masterGain.connect(convolver);
-            convolver.connect(audioCtx.destination);
-            masterGain.connect(audioCtx.destination);
+            convolver.connect(panner);
+            masterGain.connect(panner);
+            panner.connect(audioCtx.destination);
 
-            // Low drone
+            // 1. Low Drone
             const osc1 = audioCtx.createOscillator();
             osc1.type = 'sine';
             osc1.frequency.value = 52; // Deep rumble
             osc1.connect(masterGain);
             osc1.start();
             
-            // Dissonant tone
+            // 2. Dissonant Tone
             const osc2 = audioCtx.createOscillator();
             osc2.type = 'triangle';
             osc2.frequency.value = 109; 
@@ -745,7 +1175,33 @@
             osc2Gain.connect(masterGain);
             osc2.start();
 
-            // Random eerie bells/chimes generator
+            // 3. Procedural Vinyl Crackle / Noise
+            const bufferSize = audioCtx.sampleRate * 2; // 2 seconds of noise
+            const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+            const output = noiseBuffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) {
+                // Generate white noise but heavily gate it to sound like sparse pops/crackle
+                const rand = Math.random() * 2 - 1;
+                output[i] = Math.abs(rand) > 0.98 ? rand * 0.5 : 0; 
+            }
+            const noiseSrc = audioCtx.createBufferSource();
+            noiseSrc.buffer = noiseBuffer;
+            noiseSrc.loop = true;
+            
+            // Filter the crackle so it sounds muffled and old
+            const noiseFilter = audioCtx.createBiquadFilter();
+            noiseFilter.type = 'bandpass';
+            noiseFilter.frequency.value = 1000;
+            
+            const noiseGain = audioCtx.createGain();
+            noiseGain.gain.value = 0.3;
+
+            noiseSrc.connect(noiseFilter);
+            noiseFilter.connect(noiseGain);
+            noiseGain.connect(masterGain);
+            noiseSrc.start();
+
+            // 4. Random Eerie Bells Generator
             setInterval(() => {
                 if(!isPlaying) return;
                 
@@ -769,6 +1225,36 @@
                 bell.start();
                 bell.stop(audioCtx.currentTime + 5);
             }, 2500 + Math.random() * 4500);
+
+            // 5. The Architect's Heartbeat
+            const beatNode = audioCtx.createOscillator();
+            const beatGain = audioCtx.createGain();
+            beatNode.type = 'sine';
+            beatNode.frequency.value = 40; // Deep sub-bass
+            
+            beatNode.connect(beatGain);
+            beatGain.connect(masterGain);
+            beatNode.start();
+            
+            const playHeartbeat = () => {
+                if (!isPlaying) {
+                    setTimeout(playHeartbeat, 1000);
+                    return;
+                }
+                const t = audioCtx.currentTime;
+                // Lub
+                beatGain.gain.setValueAtTime(0, t);
+                beatGain.gain.linearRampToValueAtTime(0.7, t + 0.1);
+                beatGain.gain.exponentialRampToValueAtTime(0.01, t + 0.3);
+                // Dub
+                beatGain.gain.setValueAtTime(0, t + 0.35);
+                beatGain.gain.linearRampToValueAtTime(0.5, t + 0.45);
+                beatGain.gain.exponentialRampToValueAtTime(0.01, t + 0.8);
+                
+                // Slightly irregular beating
+                setTimeout(playHeartbeat, 1500 + Math.random() * 200);
+            };
+            playHeartbeat();
         }
 
         // Enter Site Logic
@@ -814,6 +1300,107 @@
                 audioToggle.classList.remove('text-jester-muted', 'border-jester-muted/30');
                 audioToggle.classList.add('text-jester-red', 'border-jester-red', 'shadow-[0_0_15px_rgba(138,15,15,0.5)]');
                 if(eqContainer) eqContainer.classList.add('eq-playing');
+            }
+        });
+
+        // The Pact Ritual Logic
+        const pactBtn = document.getElementById('seal-pact-btn');
+        const pactForm = document.getElementById('pact-form');
+        const ritualFlash = document.getElementById('ritual-flash');
+        
+        if(pactBtn && pactForm && ritualFlash) {
+            pactBtn.addEventListener('click', () => {
+                pactBtn.innerText = 'SUMMONING...';
+                pactBtn.classList.add('animate-pulse', 'bg-jester-red', 'text-black');
+                
+                // Flash 1
+                ritualFlash.style.opacity = '0.8';
+                setTimeout(() => { ritualFlash.style.opacity = '0'; }, 100);
+                
+                // Flash 2 (The strike)
+                setTimeout(() => {
+                    ritualFlash.style.opacity = '1';
+                    ritualFlash.style.transition = 'opacity 2s ease-out';
+                    
+                    // Mutate the form
+                    pactForm.innerHTML = `
+                        <div class="text-center py-16 animate-pulse">
+                            <i class="fa-solid fa-eye text-6xl text-jester-red mb-8 filter drop-shadow-[0_0_20px_#8a0f0f]"></i>
+                            <h3 class="font-heading text-3xl md:text-4xl text-jester-canvas tracking-widest mb-4">THE PACT IS WRITTEN</h3>
+                            <p class="text-jester-muted mt-6 font-mono text-xs tracking-[0.3em]">HE IS LISTENING NOW.</p>
+                        </div>
+                    `;
+                    
+                    setTimeout(() => { ritualFlash.style.opacity = '0'; }, 100);
+                }, 800);
+            });
+        }
+
+        // Tab Haunting Logic
+        const originalTitle = document.title;
+        document.addEventListener("visibilitychange", () => {
+            if (document.hidden) {
+                document.title = "DO NOT LEAVE HIM...";
+            } else {
+                document.title = originalTitle;
+            }
+        });
+
+        // Spontaneous Grid Glitching
+        setInterval(() => {
+            const tiles = document.querySelectorAll('.art-tile');
+            if(tiles.length === 0) return;
+            // Pick a random tile to glitch
+            const randomTile = tiles[Math.floor(Math.random() * tiles.length)];
+            randomTile.classList.add('animate-[glitch-subtle_0.2s_2]');
+            
+            // Remove the class so it can glitch again later
+            setTimeout(() => {
+                randomTile.classList.remove('animate-[glitch-subtle_0.2s_2]');
+            }, 500);
+        }, 4000);
+
+        // The Vertigo Scroll
+        let lastScrollY = window.scrollY;
+        let vertigoTimeout;
+        window.addEventListener('scroll', () => {
+            const currentScrollY = window.scrollY;
+            const velocity = Math.abs(currentScrollY - lastScrollY);
+            
+            if (velocity > 60) {
+                document.body.classList.add('vertigo');
+                clearTimeout(vertigoTimeout);
+                vertigoTimeout = setTimeout(() => {
+                    document.body.classList.remove('vertigo');
+                }, 150);
+            }
+            lastScrollY = currentScrollY;
+        });
+
+        // The Hidden Incantation
+        let keyBuffer = '';
+        document.addEventListener('keydown', (e) => {
+            if(e.key.length === 1) {
+                keyBuffer += e.key.toUpperCase();
+                if (keyBuffer.length > 4) keyBuffer = keyBuffer.slice(-4);
+                if (keyBuffer === 'VOID') {
+                    document.body.classList.toggle('void-mode');
+                    
+                    // Trigger an audio strike if audio is active
+                    if(audioCtx && isPlaying) {
+                        const strike = audioCtx.createOscillator();
+                        const strikeGain = audioCtx.createGain();
+                        strike.type = 'sawtooth';
+                        strike.frequency.setValueAtTime(100, audioCtx.currentTime);
+                        strike.frequency.exponentialRampToValueAtTime(10, audioCtx.currentTime + 1);
+                        strikeGain.gain.setValueAtTime(0.8, audioCtx.currentTime);
+                        strikeGain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 2);
+                        strike.connect(strikeGain);
+                        strikeGain.connect(masterGain);
+                        strike.start();
+                        strike.stop(audioCtx.currentTime + 2);
+                    }
+                }
             }
         });
     </script>
