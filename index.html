@@ -6,7 +6,7 @@
     <title>Striberium | The Surreal Motley</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;800;900&family=Raleway:ital,wght@0,300;0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;800;900&family=Raleway:ital,wght@0,300;0,400;0,600;1,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
             theme: {
@@ -27,6 +27,7 @@
                     fontFamily: {
                         heading: ['Cinzel', 'serif'],
                         body: ['Raleway', 'sans-serif'],
+                        mono: ['Space Mono', 'monospace'],
                     },
                     animation: {
                         'float-slow': 'float 8s ease-in-out infinite',
@@ -38,6 +39,7 @@
                         'marquee': 'marquee 30s linear infinite',
                         'blink-fast': 'blink-fast 6s infinite',
                         'text-glitch': 'text-glitch 3s infinite',
+                        'mist-crawl': 'mist-crawl 60s linear infinite',
                     },
                     keyframes: {
                         float: {
@@ -107,6 +109,19 @@
                             '20%': { opacity: '0.8' },
                             '80%': { opacity: '0.6' },
                             '100%': { transform: 'translateY(-30px) scale(1.2)', opacity: '0' }
+                        },
+                        'blood-drip': {
+                            '0%': { transform: 'translateY(0) scale(1)', opacity: '0.8' },
+                            '100%': { transform: 'translateY(40px) scale(0)', opacity: '0' }
+                        },
+                        'shake-violent': {
+                            '0%, 100%': { transform: 'translate(0, 0) rotate(0deg)' },
+                            '10%, 30%, 50%, 70%, 90%': { transform: 'translate(-15px, 10px) rotate(-3deg)' },
+                            '20%, 40%, 60%, 80%': { transform: 'translate(15px, -10px) rotate(3deg)' }
+                        },
+                        'mist-crawl': {
+                            '0%': { transform: 'translateX(0)' },
+                            '100%': { transform: 'translateX(-50vw)' }
                         }
                     }
                 }
@@ -196,7 +211,7 @@
         }
         .art-tile:hover {
             filter: grayscale(0%) contrast(110%);
-            box-shadow: 0 20px 50px rgba(138, 15, 15, 0.4);
+            box-shadow: 0 20px 50px rgba(138, 15, 15, 0.6);
             z-index: 20;
             animation: glitch-subtle 0.2s 2;
         }
@@ -220,7 +235,7 @@
 
         /* Custom Cursor */
         body { cursor: none; }
-        a, button, .art-tile, #enter-btn { cursor: none; }
+        a, button, .art-tile, #enter-btn, input, textarea { cursor: none; }
         
         #custom-cursor {
             position: fixed;
@@ -258,7 +273,7 @@
             animation: spin 3s linear infinite;
         }
 
-        /* Cursor Click Ripple */
+        /* Cursor Click Ripple & Bleed */
         .cursor-ripple {
             position: fixed;
             width: 30px; height: 30px;
@@ -269,8 +284,16 @@
             animation: splatter 0.6s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
             mix-blend-mode: screen;
         }
-
-        @keyframes spin { 100% { transform: translate(-50%, -50%) rotate(360deg); } }
+        .blood-drop {
+            position: fixed;
+            width: 4px; height: 4px;
+            background-color: #8a0f0f;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 999996;
+            animation: blood-drip 1s ease-in forwards;
+            filter: drop-shadow(0 0 2px #8a0f0f);
+        }
 
         /* Cursor Haunting Words */
         .haunt-word {
@@ -329,6 +352,23 @@
             animation: dust 20s linear infinite, spin-slow 10s linear infinite;
         }
 
+        /* The Creeping Mist */
+        .mist-container {
+            position: fixed;
+            bottom: -10vh;
+            left: 0;
+            width: 200vw;
+            height: 50vh;
+            background: url('data:image/svg+xml,%3Csvg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="noise"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.01" numOctaves="3" result="noise"/%3E%3CfeColorMatrix type="matrix" values="1 0 0 0 0.5  0 1 0 0 0.5  0 0 1 0 0.5  0 0 0 0.3 0" in="noise" result="coloredNoise"/%3E%3C/filter%3E%3Crect width="100%25" height="100%25" filter="url(%23noise)"/%3E%3C/svg%3E') repeat-x;
+            opacity: 0.1;
+            z-index: 5;
+            animation: mist-crawl 60s linear infinite;
+            pointer-events: none;
+            mix-blend-mode: screen;
+            mask-image: linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 100%);
+            -webkit-mask-image: linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 100%);
+        }
+
         /* The Jester's Smile */
         .sinister-smile {
             width: 60px;
@@ -341,6 +381,7 @@
             left: 50%;
             transform: translateX(-50%);
             overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
         /* Bloody Teeth */
         .sinister-smile::before {
@@ -355,6 +396,17 @@
             opacity: 0.7;
             text-shadow: 0 2px 5px #8a0f0f;
         }
+        
+        .jester-angry .sinister-smile {
+            height: 45px;
+            border-bottom: 12px solid #8a0f0f;
+            box-shadow: 0 15px 30px rgba(138, 15, 15, 1);
+        }
+        .jester-angry #tracking-pupil {
+            transform: scale(0.2, 2) !important;
+            background-color: #8a0f0f;
+            box-shadow: 0 0 20px #8a0f0f;
+        }
 
         /* Scroll Reveal Animation */
         .reveal {
@@ -367,7 +419,7 @@
             transform: translateY(0);
         }
 
-        /* Hover Bleed Effect for Main Title (Fixed Rendering) */
+        /* Hover Bleed Effect for Main Title */
         .bleed-hover {
             color: #dcd5c9;
             text-shadow: 0 5px 15px rgba(0,0,0,0.5);
@@ -399,7 +451,7 @@
             opacity: 1;
         }
         
-        /* Ritual Flash Overlay */
+        /* Ritual Flash Overlay & Shake */
         #ritual-flash {
             position: fixed;
             inset: 0;
@@ -410,12 +462,8 @@
             mix-blend-mode: overlay;
             transition: opacity 0.1s ease-in;
         }
-
-        /* The Vertigo Scroll Effect */
-        body.vertigo {
-            filter: contrast(130%) saturate(150%) drop-shadow(4px 0px 0px rgba(138, 15, 15, 0.6)) drop-shadow(-4px 0px 0px rgba(74, 28, 64, 0.6));
-            transform: skewY(0.5deg) scale(1.01);
-            transition: transform 0.1s ease-out, filter 0.1s ease-out;
+        .shake-violent {
+            animation: shake-violent 0.4s cubic-bezier(.36,.07,.19,.97) both;
         }
 
         /* Void Realm Inversion (Secret) */
@@ -461,6 +509,45 @@
         .power-flicker {
             animation: power-fail 25s infinite;
         }
+
+        /* The Descent Meter */
+        #descent-container {
+            position: fixed;
+            right: 2rem;
+            top: 25%;
+            bottom: 25%;
+            width: 1px;
+            background: rgba(220, 213, 201, 0.1);
+            z-index: 99990;
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+        #descent-progress {
+            width: 100%;
+            background: #8a0f0f;
+            box-shadow: 0 0 10px #8a0f0f;
+            transition: height 0.1s ease-out;
+        }
+        .descent-label {
+            position: absolute;
+            left: -30px;
+            top: 50%;
+            transform: translateY(-50%) rotate(-90deg);
+            font-family: 'Cinzel', serif;
+            font-size: 8px;
+            letter-spacing: 0.4em;
+            color: rgba(122, 118, 113, 0.5);
+            white-space: nowrap;
+        }
+
+        /* Cryptic Text Decrypt Font Fallback */
+        .cryptic-text {
+            font-family: 'Space Mono', monospace;
+            word-wrap: break-word;
+            display: inline-block;
+        }
     </style>
 </head>
 <body class="font-body antialiased min-h-screen flex flex-col selection:bg-jester-red selection:text-white relative locked power-flicker">
@@ -468,6 +555,15 @@
     <!-- Custom Cursors -->
     <div id="custom-cursor"></div>
     <div id="custom-cursor-trail"></div>
+
+    <!-- The Descent Meter -->
+    <div id="descent-container" class="hidden md:flex">
+        <div id="descent-progress" style="height: 0%;"></div>
+        <div class="descent-label">DESCENT</div>
+    </div>
+
+    <!-- The Creeping Mist -->
+    <div class="mist-container"></div>
 
     <!-- CRT Overlay -->
     <div class="scanlines"></div>
@@ -553,12 +649,12 @@
                         <i class="fa-solid fa-diamond text-[8px] text-jester-red"></i>
                     </div>
                     
-                    <h1 class="font-heading text-5xl md:text-7xl lg:text-[8rem] font-black leading-[0.8] tracking-tighter animate-[text-glitch_3s_infinite] bleed-hover relative z-20">
+                    <h1 class="font-heading text-5xl md:text-6xl lg:text-7xl xl:text-[6rem] font-black leading-[0.8] tracking-tighter animate-[text-glitch_3s_infinite] bleed-hover relative z-20">
                         Striberium.
                     </h1>
                     
-                    <p class="text-xl md:text-2xl text-jester-canvas font-light leading-relaxed max-w-lg mx-auto lg:mx-0 border-l-2 border-jester-red/60 pl-4 bg-gradient-to-r from-jester-red/10 to-transparent py-2 mt-4 relative z-10">
-                        Architect of the Grotesque.<br>Jester of the Void.
+                    <p class="cryptic-text text-xl md:text-2xl text-jester-canvas font-light leading-relaxed max-w-lg mx-auto lg:mx-0 border-l-2 border-jester-red/60 pl-4 bg-gradient-to-r from-jester-red/10 to-transparent py-2 mt-4 relative z-10" data-value="Architect of the Grotesque. Jester of the Void.">
+                        Architect of the Grotesque. Jester of the Void.
                     </p>
 
                     <p class="text-sm md:text-base text-jester-muted max-w-lg mx-auto lg:mx-0 font-body">
@@ -584,16 +680,16 @@
                 <!-- Right: The Surreal Jester Avatar Concept -->
                 <div class="order-1 lg:order-2 flex justify-center relative">
                     <!-- Chaotic orbit rings -->
-                    <div class="absolute inset-0 border-[2px] border-jester-red/20 rounded-full animate-[spin_20s_linear_infinite] scale-110"></div>
-                    <div class="absolute inset-0 border border-jester-gold/15 rounded-full animate-[spin_12s_linear_infinite_reverse] scale-125 border-dashed"></div>
+                    <div class="absolute inset-0 border-[2px] border-jester-red/20 rounded-full animate-[spin_20s_linear_infinite] scale-110 pointer-events-none"></div>
+                    <div class="absolute inset-0 border border-jester-gold/15 rounded-full animate-[spin_12s_linear_infinite_reverse] scale-125 border-dashed pointer-events-none"></div>
                     
                     <!-- Main "Avatar" Canvas -->
-                    <div class="relative w-72 h-72 md:w-96 md:h-96 theatrical-border rounded-full flex items-center justify-center overflow-hidden group">
+                    <div id="jester-avatar" class="relative w-72 h-72 md:w-96 md:h-96 theatrical-border rounded-full flex items-center justify-center overflow-hidden group cursor-none">
                         <!-- Cosmic background inside avatar -->
                         <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-jester-purple/50 via-jester-dark to-black z-0"></div>
                         
                         <!-- Abstract Macabre Elements -->
-                        <div class="relative z-10 w-full h-full flex flex-col items-center justify-center transform group-hover:scale-105 transition-transform duration-1000 animate-float-slow">
+                        <div class="relative z-10 w-full h-full flex flex-col items-center justify-center transform group-hover:scale-105 transition-transform duration-1000 animate-float-slow pointer-events-none">
                             
                             <!-- The "Hat/Horns" - Cosmic Crescent Moons -->
                             <div class="flex gap-16 absolute top-8">
@@ -607,9 +703,9 @@
                                 <div class="w-32 h-36 rounded-[40%] bg-[radial-gradient(circle_at_center,_#8c5a4f,_#1a0a0a)] shadow-[0_0_40px_rgba(138,15,15,0.7)] flex flex-col items-center justify-start pt-6 relative overflow-hidden border border-jester-red/30">
                                     <div class="absolute inset-0 flesh-texture mix-blend-overlay"></div>
                                     <!-- Tracking Slit Eye container -->
-                                    <div class="w-10 h-16 bg-jester-gold rounded-[100%] shadow-[inset_0_0_20px_#000] flex items-center justify-center mb-2 relative overflow-hidden animate-blink-fast">
+                                    <div class="w-10 h-16 bg-jester-gold rounded-[100%] shadow-[inset_0_0_20px_#000] flex items-center justify-center mb-2 relative overflow-hidden animate-blink-fast transition-transform duration-300">
                                         <!-- The pupil that will move via JS -->
-                                        <div id="tracking-pupil" class="w-3 h-14 bg-black rounded-[100%] absolute shadow-[0_0_10px_#8a0f0f]"></div>
+                                        <div id="tracking-pupil" class="w-3 h-14 bg-black rounded-[100%] absolute shadow-[0_0_10px_#8a0f0f] transition-all duration-300"></div>
                                     </div>
                                     <!-- Sinister Smile -->
                                     <div class="sinister-smile"></div>
@@ -642,8 +738,8 @@
                 
                 <div class="text-center mb-20 relative">
                     <i class="fa-solid fa-eye text-jester-red text-3xl mb-6 drop-shadow-[0_0_15px_rgba(138,15,15,0.8)]"></i>
-                    <h2 class="font-heading text-4xl md:text-5xl text-jester-canvas tracking-widest uppercase">
-                        Gallery of Visions
+                    <h2 class="cryptic-text font-heading text-4xl md:text-5xl text-jester-canvas tracking-widest uppercase" data-value="GALLERY OF VISIONS">
+                        GALLERY OF VISIONS
                     </h2>
                     <p class="text-jester-muted font-body mt-4 tracking-widest text-sm">116 ENTITIES MANIFESTED FROM THE ABYSS</p>
                 </div>
@@ -776,37 +872,69 @@
                                 <i class="fa-solid fa-waveform-lines"></i>
                             </div>
                         </div>
-                        <h2 class="font-heading text-4xl md:text-5xl text-jester-canvas tracking-widest mb-4">Aural Torment</h2>
+                        <h2 class="cryptic-text font-heading text-4xl md:text-5xl text-jester-canvas tracking-widest mb-4 uppercase" data-value="AURAL TORMENT">
+                            AURAL TORMENT
+                        </h2>
                         <p class="text-jester-muted font-light leading-relaxed max-w-2xl text-lg">
                             Music isn't composed; it is extracted from the void. Dark ambient, experimental noise, and atmospheric dread. Soundscapes designed for empty rooms and restless minds.
                         </p>
                     </div>
 
-                    <!-- Dark Media Player UI / Link -->
-                    <div class="max-w-xl mx-auto">
-                        <a href="https://www.youtube.com/@Striberium" target="_blank" class="block p-6 bg-[#0a0508] border border-jester-purple/40 shadow-[inset_0_0_30px_rgba(74,28,64,0.5)] relative overflow-hidden group/player hover:border-jester-red transition-all duration-500 cursor-none">
+                    <!-- Enhanced Tracklist / Media Player UI -->
+                    <div class="max-w-2xl mx-auto space-y-4">
+                        <!-- Transmission 1 -->
+                        <a href="https://www.youtube.com/@Striberium" target="_blank" class="block p-4 bg-[#0a0508] border border-jester-purple/40 shadow-[inset_0_0_30px_rgba(74,28,64,0.3)] relative overflow-hidden group/player hover:border-jester-red transition-all duration-500 cursor-none">
                             <div class="absolute inset-0 bg-jester-red/10 opacity-0 group-hover/player:opacity-100 transition-opacity duration-500"></div>
                             <div class="flex items-center gap-6 relative z-10">
-                                <div class="w-16 h-16 rounded-full border border-jester-red/50 flex items-center justify-center bg-black group-hover/player:bg-jester-red/20 transition-colors shadow-[0_0_20px_rgba(138,15,15,0.5)]">
-                                    <i class="fa-brands fa-youtube text-jester-red text-2xl group-hover/player:scale-110 transition-transform"></i>
+                                <div class="w-12 h-12 rounded-full border border-jester-red/50 flex items-center justify-center bg-black group-hover/player:bg-jester-red/20 transition-colors">
+                                    <i class="fa-solid fa-play text-jester-red text-sm group-hover/player:scale-110 transition-transform ml-1"></i>
                                 </div>
                                 <div class="flex-grow text-left">
-                                    <div class="font-heading text-lg text-jester-canvas tracking-widest mb-2 group-hover/player:text-white transition-colors">YOUTUBE TRANSMISSIONS</div>
-                                    <div class="w-full h-1 bg-black rounded-full overflow-hidden mb-2">
-                                        <div class="h-full bg-jester-purple/80 w-[100%] relative overflow-hidden group-hover/player:bg-jester-red transition-colors"></div>
-                                    </div>
+                                    <div class="font-heading text-sm text-jester-canvas tracking-widest mb-1 group-hover/player:text-white transition-colors">VOID RESONANCE VOL. III</div>
                                     <div class="flex justify-between text-[10px] font-mono text-jester-muted">
                                         <span>youtube.com/@Striberium</span>
-                                        <span class="group-hover/player:text-jester-red transition-colors font-bold">SUBSCRIBE</span>
+                                        <span class="group-hover/player:text-jester-red transition-colors font-bold">LISTEN</span>
                                     </div>
                                 </div>
-                                
-                                <!-- Animated CSS Equalizer -->
-                                <div id="eq-container" class="flex items-end gap-[2px] h-6 opacity-60">
+                                <div id="eq-container-1" class="eq-container flex items-end gap-[2px] h-6 opacity-60">
                                     <div class="eq-bar w-[3px] bg-jester-purple/80 h-[30%]" style="animation-duration: 0.8s;"></div>
                                     <div class="eq-bar w-[3px] bg-jester-purple/80 h-[80%]" style="animation-duration: 1.2s;"></div>
                                     <div class="eq-bar w-[3px] bg-jester-purple/80 h-[50%]" style="animation-duration: 0.9s;"></div>
                                     <div class="eq-bar w-[3px] bg-jester-purple/80 h-[100%]" style="animation-duration: 1.5s;"></div>
+                                </div>
+                            </div>
+                        </a>
+
+                        <!-- Transmission 2 -->
+                        <a href="https://www.youtube.com/@Striberium" target="_blank" class="block p-4 bg-[#0a0508] border border-jester-purple/20 relative overflow-hidden group/player hover:border-jester-red transition-all duration-500 cursor-none">
+                            <div class="absolute inset-0 bg-jester-red/10 opacity-0 group-hover/player:opacity-100 transition-opacity duration-500"></div>
+                            <div class="flex items-center gap-6 relative z-10">
+                                <div class="w-12 h-12 rounded-full border border-jester-purple/30 flex items-center justify-center bg-black group-hover/player:bg-jester-red/20 transition-colors">
+                                    <i class="fa-solid fa-play text-jester-muted text-sm group-hover/player:scale-110 transition-transform ml-1"></i>
+                                </div>
+                                <div class="flex-grow text-left">
+                                    <div class="font-heading text-sm text-jester-muted tracking-widest mb-1 group-hover/player:text-white transition-colors">ECHOES OF THE JESTER</div>
+                                    <div class="flex justify-between text-[10px] font-mono text-jester-muted/50">
+                                        <span>youtube.com/@Striberium</span>
+                                        <span class="group-hover/player:text-jester-red transition-colors font-bold">LISTEN</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+
+                        <!-- Transmission 3 -->
+                        <a href="https://www.youtube.com/@Striberium" target="_blank" class="block p-4 bg-[#0a0508] border border-jester-purple/20 relative overflow-hidden group/player hover:border-jester-red transition-all duration-500 cursor-none">
+                            <div class="absolute inset-0 bg-jester-red/10 opacity-0 group-hover/player:opacity-100 transition-opacity duration-500"></div>
+                            <div class="flex items-center gap-6 relative z-10">
+                                <div class="w-12 h-12 rounded-full border border-jester-purple/30 flex items-center justify-center bg-black group-hover/player:bg-jester-red/20 transition-colors">
+                                    <i class="fa-solid fa-play text-jester-muted text-sm group-hover/player:scale-110 transition-transform ml-1"></i>
+                                </div>
+                                <div class="flex-grow text-left">
+                                    <div class="font-heading text-sm text-jester-muted tracking-widest mb-1 group-hover/player:text-white transition-colors">THE FLESH WEAVER'S LULLABY</div>
+                                    <div class="flex justify-between text-[10px] font-mono text-jester-muted/50">
+                                        <span>youtube.com/@Striberium</span>
+                                        <span class="group-hover/player:text-jester-red transition-colors font-bold">LISTEN</span>
+                                    </div>
                                 </div>
                             </div>
                         </a>
@@ -827,8 +955,8 @@
             <div class="max-w-3xl mx-auto relative z-10">
                 <div class="text-center mb-16">
                     <i class="fa-solid fa-pen-nib text-jester-red text-3xl mb-6 drop-shadow-[0_0_15px_rgba(138,15,15,0.8)]"></i>
-                    <h2 class="font-heading text-4xl md:text-5xl text-jester-canvas tracking-widest uppercase">
-                        Form a Pact
+                    <h2 class="cryptic-text font-heading text-4xl md:text-5xl text-jester-canvas tracking-widest uppercase" data-value="FORM A PACT">
+                        FORM A PACT
                     </h2>
                     <p class="text-jester-muted font-body mt-4 tracking-widest text-sm">SUMMON THE ARCHITECT. PROPOSE YOUR OFFERING.</p>
                 </div>
@@ -895,7 +1023,7 @@
                 <!-- Art injected via JS -->
             </div>
             <div class="w-full md:w-1/2 space-y-6 text-center md:text-left">
-                <h3 id="modal-title" class="font-heading text-3xl md:text-5xl text-jester-canvas tracking-widest uppercase drop-shadow-[0_0_10px_rgba(220,213,201,0.5)]"></h3>
+                <h3 id="modal-title" class="cryptic-text font-heading text-3xl md:text-5xl text-jester-canvas tracking-widest uppercase drop-shadow-[0_0_10px_rgba(220,213,201,0.5)]"></h3>
                 <div class="w-16 h-1 bg-jester-red/50 mx-auto md:mx-0"></div>
                 <p id="modal-lore" class="text-jester-muted font-light leading-relaxed text-lg italic border-l-2 border-jester-purple/50 pl-4"></p>
                 <div class="pt-8">
@@ -921,9 +1049,11 @@
         const cursorTrail = document.getElementById('custom-cursor-trail');
         const links = document.querySelectorAll('a, button, .art-tile, #enter-btn, input, textarea');
         const artTiles = document.querySelectorAll('.art-tile');
+        const eqContainers = document.querySelectorAll('.eq-container');
 
         const hauntWords = ['listen', 'void', 'flesh', 'rot', 'stribe', 'awake', 'sleep', 'offer'];
         let lastHauntTime = 0;
+        let lastMoveTime = 0;
 
         document.addEventListener('mousemove', (e) => {
             cursor.style.left = e.clientX + 'px';
@@ -934,8 +1064,21 @@
                 cursorTrail.style.top = e.clientY + 'px';
             }, 60);
 
-            // Whispering Cursor Logic
             const now = Date.now();
+            const timeDelta = now - lastMoveTime;
+            lastMoveTime = now;
+
+            // Bleeding Cursor - Occurs on fast mouse movement
+            if (timeDelta > 0 && timeDelta < 20 && Math.random() > 0.8) {
+                const drop = document.createElement('div');
+                drop.classList.add('blood-drop');
+                drop.style.left = (e.clientX + (Math.random() * 10 - 5)) + 'px';
+                drop.style.top = (e.clientY + (Math.random() * 10 - 5)) + 'px';
+                document.body.appendChild(drop);
+                setTimeout(() => drop.remove(), 1000);
+            }
+
+            // Whispering Cursor Logic
             if (Math.random() > 0.985 && now - lastHauntTime > 1500 && document.body.classList.contains('locked') === false) {
                 lastHauntTime = now;
                 const word = document.createElement('div');
@@ -973,6 +1116,40 @@
             }, 600);
         });
 
+        // Cryptic Decrypt Logic
+        const crypticChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*!~?";
+        const bindCrypticText = () => {
+            document.querySelectorAll('.cryptic-text').forEach(el => {
+                // Initialize to cryptic if it has data-value
+                if(el.dataset.value && !el.dataset.initialized) {
+                    el.innerText = el.dataset.value.split('').map(char => {
+                        return char === ' ' ? ' ' : crypticChars[Math.floor(Math.random() * crypticChars.length)];
+                    }).join('');
+                    el.dataset.initialized = "true";
+                }
+
+                el.addEventListener('mouseenter', event => {
+                    let iterations = 0;
+                    const targetText = event.target.dataset.value || event.target.innerText;
+                    if(!event.target.dataset.value) event.target.dataset.value = targetText; // store original
+                    
+                    clearInterval(event.target.decryptInterval);
+
+                    event.target.decryptInterval = setInterval(() => {
+                        event.target.innerText = targetText.split("")
+                            .map((letter, index) => {
+                                if(index < iterations) return targetText[index];
+                                return letter === ' ' ? ' ' : crypticChars[Math.floor(Math.random() * crypticChars.length)];
+                            }).join("");
+                        
+                        if(iterations >= targetText.length) clearInterval(event.target.decryptInterval);
+                        iterations += 1 / 3;
+                    }, 30);
+                });
+            });
+        };
+        bindCrypticText();
+
         // Void Gallery Modal Logic
         const voidModal = document.getElementById('void-modal');
         const closeModalBtn = document.getElementById('close-modal');
@@ -986,6 +1163,7 @@
                 link.addEventListener('mouseenter', () => document.body.classList.add('hovering-link'));
                 link.addEventListener('mouseleave', () => document.body.classList.remove('hovering-link'));
             });
+            bindCrypticText();
         };
 
         artTiles.forEach(tile => {
@@ -1008,7 +1186,9 @@
                 modalArtContainer.classList.remove('art-tile', 'w-full', 'cursor-none', 'outline-none', 'border-none');
                 modalArtContainer.classList.add('w-full', 'md:w-1/2', 'aspect-square', 'theatrical-border', 'relative', 'flex', 'items-center', 'justify-center', 'overflow-hidden', 'shadow-[0_0_50px_rgba(138,15,15,0.2)]', 'animate-[breathe_6s_infinite]');
                 
-                modalTitle.innerText = title;
+                // Set Cryptic Data
+                modalTitle.dataset.value = title;
+                modalTitle.dataset.initialized = ""; // force re-init
                 modalLore.innerText = lore;
                 
                 // Show Modal
@@ -1021,6 +1201,35 @@
             voidModal.classList.remove('active');
             document.body.classList.remove('hovering-link'); // safeguard
         });
+
+        // The Architect's Gaze (Jester Mask Easter Egg)
+        const jesterAvatar = document.getElementById('jester-avatar');
+        let clickCount = 0;
+        if(jesterAvatar) {
+            jesterAvatar.addEventListener('click', () => {
+                clickCount++;
+                if(clickCount >= 3) {
+                    jesterAvatar.classList.add('jester-angry');
+                    if(audioCtx && isPlaying) {
+                        const shriek = audioCtx.createOscillator();
+                        const shriekGain = audioCtx.createGain();
+                        shriek.type = 'sawtooth';
+                        shriek.frequency.setValueAtTime(800, audioCtx.currentTime);
+                        shriek.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 1.5);
+                        shriekGain.gain.setValueAtTime(0.5, audioCtx.currentTime);
+                        shriekGain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 1.5);
+                        shriek.connect(shriekGain);
+                        shriekGain.connect(masterGain);
+                        shriek.start();
+                        shriek.stop(audioCtx.currentTime + 1.5);
+                    }
+                    setTimeout(() => {
+                        jesterAvatar.classList.remove('jester-angry');
+                        clickCount = 0;
+                    }, 2000);
+                }
+            });
+        }
 
         // Eye Tracking Logic
         const eyePupil = document.getElementById('tracking-pupil');
@@ -1074,7 +1283,22 @@
         window.addEventListener('click', resetIdleTimer);
         resetIdleTimer(); // Init
 
-        // 3D Tilt Effect for Gallery Tiles
+        // 3D Tilt Effect for Gallery Tiles & Hover Sonics
+        function playHoverSound() {
+            if(!isPlaying || !audioCtx) return;
+            const osc = audioCtx.createOscillator();
+            const hoverGain = audioCtx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(60, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(20, audioCtx.currentTime + 0.15);
+            hoverGain.gain.setValueAtTime(0.4, audioCtx.currentTime);
+            hoverGain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
+            osc.connect(hoverGain);
+            hoverGain.connect(masterGain);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.15);
+        }
+
         artTiles.forEach(tile => {
             tile.addEventListener('mousemove', (e) => {
                 const rect = tile.getBoundingClientRect();
@@ -1098,6 +1322,7 @@
             tile.addEventListener('mouseenter', () => {
                 // Remove transition delay for immediate tracking
                 tile.style.transition = `transform 0.1s linear, filter 0.4s ease, box-shadow 0.4s ease`;
+                playHoverSound();
             });
         });
 
@@ -1120,7 +1345,6 @@
         const audioToggle = document.getElementById('audio-toggle');
         const audioIcon = document.getElementById('audio-icon');
         const audioText = document.getElementById('audio-text');
-        const eqContainer = document.getElementById('eq-container');
 
         let audioCtx;
         let masterGain;
@@ -1277,7 +1501,7 @@
                 audioCtx.resume();
             }
             isPlaying = true;
-            if(eqContainer) eqContainer.classList.add('eq-playing');
+            eqContainers.forEach(container => container.classList.add('eq-playing'));
         });
 
         // Toggle Audio Logic
@@ -1291,7 +1515,7 @@
                 audioText.innerText = 'WAKE THE VOID';
                 audioToggle.classList.remove('text-jester-red', 'border-jester-red', 'shadow-[0_0_15px_rgba(138,15,15,0.5)]');
                 audioToggle.classList.add('text-jester-muted', 'border-jester-muted/30');
-                if(eqContainer) eqContainer.classList.remove('eq-playing');
+                eqContainers.forEach(container => container.classList.remove('eq-playing'));
             } else {
                 audioCtx.resume();
                 isPlaying = true;
@@ -1299,7 +1523,7 @@
                 audioText.innerText = 'SILENCE THE VOID';
                 audioToggle.classList.remove('text-jester-muted', 'border-jester-muted/30');
                 audioToggle.classList.add('text-jester-red', 'border-jester-red', 'shadow-[0_0_15px_rgba(138,15,15,0.5)]');
-                if(eqContainer) eqContainer.classList.add('eq-playing');
+                eqContainers.forEach(container => container.classList.add('eq-playing'));
             }
         });
 
@@ -1313,28 +1537,97 @@
                 pactBtn.innerText = 'SUMMONING...';
                 pactBtn.classList.add('animate-pulse', 'bg-jester-red', 'text-black');
                 
-                // Flash 1
+                // Flash 1 & Shake
+                document.body.classList.add('shake-violent');
                 ritualFlash.style.opacity = '0.8';
-                setTimeout(() => { ritualFlash.style.opacity = '0'; }, 100);
+                setTimeout(() => { 
+                    ritualFlash.style.opacity = '0'; 
+                }, 100);
                 
                 // Flash 2 (The strike)
                 setTimeout(() => {
                     ritualFlash.style.opacity = '1';
                     ritualFlash.style.transition = 'opacity 2s ease-out';
                     
+                    // Trigger audio crash if playing
+                    if(audioCtx && isPlaying) {
+                        const crash = audioCtx.createOscillator();
+                        const crashGain = audioCtx.createGain();
+                        crash.type = 'sawtooth';
+                        crash.frequency.setValueAtTime(200, audioCtx.currentTime);
+                        crash.frequency.exponentialRampToValueAtTime(10, audioCtx.currentTime + 1);
+                        crashGain.gain.setValueAtTime(0.8, audioCtx.currentTime);
+                        crashGain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 2);
+                        crash.connect(crashGain);
+                        crashGain.connect(masterGain);
+                        crash.start();
+                        crash.stop(audioCtx.currentTime + 2);
+                    }
+                    
                     // Mutate the form
                     pactForm.innerHTML = `
                         <div class="text-center py-16 animate-pulse">
-                            <i class="fa-solid fa-eye text-6xl text-jester-red mb-8 filter drop-shadow-[0_0_20px_#8a0f0f]"></i>
+                            <i class="fa-solid fa-eye text-6xl text-jester-red mb-8 filter drop-shadow-[0_0_30px_#8a0f0f]"></i>
                             <h3 class="font-heading text-3xl md:text-4xl text-jester-canvas tracking-widest mb-4">THE PACT IS WRITTEN</h3>
                             <p class="text-jester-muted mt-6 font-mono text-xs tracking-[0.3em]">HE IS LISTENING NOW.</p>
                         </div>
                     `;
                     
-                    setTimeout(() => { ritualFlash.style.opacity = '0'; }, 100);
+                    setTimeout(() => { 
+                        ritualFlash.style.opacity = '0'; 
+                        document.body.classList.remove('shake-violent');
+                    }, 100);
                 }, 800);
             });
         }
+
+        // Tainted Keystrokes (Pact Form Bleeding)
+        const pactInputs = document.querySelectorAll('#pact-form input, #pact-form textarea');
+        pactInputs.forEach(input => {
+            input.addEventListener('input', (e) => {
+                if (Math.random() > 0.6) {
+                    const rect = input.getBoundingClientRect();
+                    // Approximate a random position along the bottom edge of the input
+                    const x = rect.left + Math.random() * rect.width;
+                    const y = rect.bottom;
+                    
+                    const drop = document.createElement('div');
+                    drop.classList.add('blood-drop');
+                    drop.style.left = x + 'px';
+                    drop.style.top = y + 'px';
+                    document.body.appendChild(drop);
+                    
+                    setTimeout(() => drop.remove(), 1000);
+                }
+            });
+        });
+
+        // The Watchers in the Dark
+        const eyeContainer = document.createElement('div');
+        eyeContainer.className = 'fixed inset-0 pointer-events-none z-[4] overflow-hidden mix-blend-screen';
+        document.body.appendChild(eyeContainer);
+
+        setInterval(() => {
+            if (Math.random() > 0.5 && !document.body.classList.contains('locked')) {
+                const eye = document.createElement('i');
+                eye.className = 'fa-solid fa-eye absolute text-jester-red/30 text-sm animate-blink-fast drop-shadow-[0_0_15px_rgba(138,15,15,0.8)]';
+                
+                // Random placement across the viewport
+                eye.style.left = Math.random() * 100 + 'vw';
+                eye.style.top = Math.random() * 100 + 'vh';
+                
+                // Random scale and rotation
+                eye.style.transform = `scale(${Math.random() * 2 + 1}) rotate(${Math.random() * 360}deg)`;
+                eyeContainer.appendChild(eye);
+
+                // Fade out and remove after a few seconds
+                setTimeout(() => {
+                    eye.style.opacity = '0';
+                    eye.style.transition = 'opacity 2s ease-out';
+                    setTimeout(() => eye.remove(), 2000);
+                }, 3000 + Math.random() * 3000);
+            }
+        }, 1500);
 
         // Tab Haunting Logic
         const originalTitle = document.title;
@@ -1348,10 +1641,9 @@
 
         // Spontaneous Grid Glitching
         setInterval(() => {
-            const tiles = document.querySelectorAll('.art-tile');
-            if(tiles.length === 0) return;
+            if(artTiles.length === 0) return;
             // Pick a random tile to glitch
-            const randomTile = tiles[Math.floor(Math.random() * tiles.length)];
+            const randomTile = artTiles[Math.floor(Math.random() * artTiles.length)];
             randomTile.classList.add('animate-[glitch-subtle_0.2s_2]');
             
             // Remove the class so it can glitch again later
@@ -1360,49 +1652,6 @@
             }, 500);
         }, 4000);
 
-        // The Vertigo Scroll
-        let lastScrollY = window.scrollY;
-        let vertigoTimeout;
-        window.addEventListener('scroll', () => {
-            const currentScrollY = window.scrollY;
-            const velocity = Math.abs(currentScrollY - lastScrollY);
-            
-            if (velocity > 60) {
-                document.body.classList.add('vertigo');
-                clearTimeout(vertigoTimeout);
-                vertigoTimeout = setTimeout(() => {
-                    document.body.classList.remove('vertigo');
-                }, 150);
-            }
-            lastScrollY = currentScrollY;
-        });
-
-        // The Hidden Incantation
-        let keyBuffer = '';
-        document.addEventListener('keydown', (e) => {
-            if(e.key.length === 1) {
-                keyBuffer += e.key.toUpperCase();
-                if (keyBuffer.length > 4) keyBuffer = keyBuffer.slice(-4);
-                if (keyBuffer === 'VOID') {
-                    document.body.classList.toggle('void-mode');
-                    
-                    // Trigger an audio strike if audio is active
-                    if(audioCtx && isPlaying) {
-                        const strike = audioCtx.createOscillator();
-                        const strikeGain = audioCtx.createGain();
-                        strike.type = 'sawtooth';
-                        strike.frequency.setValueAtTime(100, audioCtx.currentTime);
-                        strike.frequency.exponentialRampToValueAtTime(10, audioCtx.currentTime + 1);
-                        strikeGain.gain.setValueAtTime(0.8, audioCtx.currentTime);
-                        strikeGain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 2);
-                        strike.connect(strikeGain);
-                        strikeGain.connect(masterGain);
-                        strike.start();
-                        strike.stop(audioCtx.currentTime + 2);
-                    }
-                }
-            }
-        });
     </script>
 </body>
 </html>
